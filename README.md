@@ -21,6 +21,7 @@ For results on wine data, each figure in [results](results/) folder represents a
 ## Cite
 To cite the contents of this repository, please cite both the paper and this repo, using their respective DOIs.
 [https://doi.org/10.1287/ijoc.2022.0312](https://doi.org/10.1287/ijoc.2022.0312)
+
 [https://doi.org/10.1287/ijoc.2022.0312.cd](https://doi.org/10.1287/ijoc.2022.0312.cd)
 
 Below is the BibTex for citing this version of the data
