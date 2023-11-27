@@ -18,5 +18,19 @@ The results include predicted outcome $F(x^\ast_C)$ in Column N, true outcome $f
 
 For results on wine data, each figure in [results](results/) folder represents a predictive model fitted to the wine data and displays training input data, and solutions obtained from the **$BASE$** model and two model configurations with **$IF$** and **$MD$** constraints (set at tightness level 6).
 
+## Cite
+To cite the contents of this repository, please cite both the paper and this repo, using their respective DOIs.
+[https://doi.org/10.1287/ijoc.2022.0312](https://doi.org/10.1287/ijoc.2022.0312)
+[https://doi.org/10.1287/ijoc.2022.0312.cd](https://doi.org/10.1287/ijoc.2022.0312.cd)
 
-
+Below is the BibTex for citing this version of the data
+```
+@misc{contrslearning_oppm_data,
+  author =        {C. Shi, M. Emadikhiav, L. Lozano and D. Bergman},
+  publisher =     {INFORMS Journal on Computing},
+  title =         {Constraint Learning to Define Trust Regions in  Optimization Over Pre-Trained Predictive Models},
+  year =          {2023},
+  doi =           {10.1287/ijoc.2022.0312.cd},
+  note =          {Available for download at https://github.com/INFORMSJoC/2022.0312},
+}  
+```
