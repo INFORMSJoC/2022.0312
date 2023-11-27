@@ -1,8 +1,8 @@
 [![INFORMS Journal on Computing Logo](https://INFORMSJoC.github.io/logos/INFORMS_Journal_on_Computing_Header.jpg)](https://pubsonline.informs.org/journal/ijoc)
 
-# Constraint Learning to Model Trust Region
+# Constraint Learning to Define Trust Regions in Optimization Over Pre-Trained Predictive Models
 
-This repository contains the problem instances and source code in the article "Constraint Learning to Define Trust Regions in Optimization Over Pre-Trained Predictive Models", authored by Chenbo Shi, Mohsen Emadikhiav, Leonardo Lozano, and David Bergman.
+This repository contains the problem instances and results in the article "Constraint Learning to Define Trust Regions in Optimization Over Pre-Trained Predictive Models", authored by Chenbo Shi, Mohsen Emadikhiav, Leonardo Lozano, and David Bergman.
 
 ## Cite
 To cite the contents of this repository, please cite both the paper and this repo, using their respective DOIs.
