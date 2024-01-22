@@ -1,8 +1,27 @@
 [![INFORMS Journal on Computing Logo](https://INFORMSJoC.github.io/logos/INFORMS_Journal_on_Computing_Header.jpg)](https://pubsonline.informs.org/journal/ijoc)
 
-# Constraint Learning to Model Trust Region
+# Constraint Learning to Define Trust Regions in Optimization Over Pre-Trained Predictive Models
+This archive is distributed in association with the [INFORMS Journal on Computing](https://pubsonline.informs.org/journal/ijoc) under the [MIT License](LICENSE).
 
-This repository contains the problem instances and source code in the article "Constraint Learning to Define Trust Regions in Optimization Over Pre-Trained Predictive Models", authored by Chenbo Shi, Mohsen Emadikhiav, Leonardo Lozano, and David Bergman.
+The purpose of this repository is to share the instances and results used in the paper "Constraint Learning to Define Trust Regions in Optimization Over Pre-Trained Predictive Models", authored by Chenbo Shi, Mohsen Emadikhiav, Leonardo Lozano, and David Bergman.
+
+## Cite
+To cite the contents of this repository, please cite both the paper and this repo, using their respective DOIs.
+[https://doi.org/10.1287/ijoc.2022.0312](https://doi.org/10.1287/ijoc.2022.0312)
+
+[https://doi.org/10.1287/ijoc.2022.0312.cd](https://doi.org/10.1287/ijoc.2022.0312.cd)
+
+Below is the BibTex for citing this version of the data
+```
+@misc{contrslearning_oppm_data,
+  author =        {C. Shi, M. Emadikhiav, L. Lozano and D. Bergman},
+  publisher =     {INFORMS Journal on Computing},
+  title =         {Constraint Learning to Define Trust Regions in  Optimization Over Pre-Trained Predictive Models},
+  year =          {2023},
+  doi =           {10.1287/ijoc.2022.0312.cd},
+  note =          {Available for download at https://github.com/INFORMSJoC/2022.0312},
+}  
+```
 
 ## Dataset 
 The folder of [data](data/) contains all the datasets used in the paper, including the wine dataset used in the real world application ([winequality-red.csv](data/winequality-red.csv)) and all the 70 training datasets for seven benchmark functions (under the subfolder of [data/synthetic_data](data/synthetic_data)). 
