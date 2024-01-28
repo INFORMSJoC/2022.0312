@@ -11,10 +11,10 @@ To cite the contents of this repository, please cite both the paper and this rep
 
 [https://doi.org/10.1287/ijoc.2022.0312.cd](https://doi.org/10.1287/ijoc.2022.0312.cd)
 
-Below is the BibTex for citing this version of the data
+Below is the BibTex for citing this snapshot of the repository.
 ```
-@misc{contrslearning_oppm_data,
-  author =        {C. Shi, M. Emadikhiav, L. Lozano and D. Bergman},
+@article{contrslearning_oppm_data,
+  author =        {Shi, Chenbo and Emadikhiav, Mohsen and Lozano, Leonardo and Bergman, David},
   publisher =     {INFORMS Journal on Computing},
   title =         {Constraint Learning to Define Trust Regions in  Optimization Over Pre-Trained Predictive Models},
   year =          {2023},
