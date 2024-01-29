@@ -45,7 +45,7 @@ To run the code and replicate the experiments, you will need to make sure that y
 
 [main_synthetic_data.py](src/main_synthetic_data.py) corresponds to the experiment described in Section 4.1 - 4.6, while [main_real_data.py](src/main_real_data.py) corresponds to Section 4.7 in the paper. The remaining files contain code used to define functions, build models, and specify trust-region constraints. Among them, we want to highlight that: 
 * [predictive_modeling.py](src/predictive_modeling.py) contains code that receives information from pre-trained predictive models, which will be fed into the OPPM models.
-* [optimization_models.py](src/optimization_models.py) includes the OPPM models with the following configurations: **BASE**, **IF**, **MD**, **KNN**.
-* [optimization_benchmark_models.py](src/optimization_benchmark_models.py) includes the OPPM models with the following configurations: **SVM**, **SVM-BC**, **CH**, **PCA**.
+* [optimization_models.py](src/optimization_models.py) includes the OPPM models of **BASE** (without trust-region constraints) and variants with the following configurations: **IF**, **MD**, **KNN**, which are our proposed trust-regions.
+* [optimization_benchmark_models.py](src/optimization_benchmark_models.py) includes the OPPM models with the following configurations: **SVM**, **SVM-BC**, **CH**, **PCA**, which are trust-regions existing in literature.
 
 
