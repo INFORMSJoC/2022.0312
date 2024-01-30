@@ -40,12 +40,13 @@ For results on wine data, each figure in [results](results/) folder represents a
 ## Replicating
 The folder of [src](src/) contains all the code that generates synthetic data, and implements the optimization models based on three predictive models (linear regression, random forest, and neural network) and different types of trust-region constraints.  
 
-To run the code and replicate the experiments, you will need to make sure that you have valid licenses of <code>Gurobi</code> and <code>BARON</code>, and the following dependencies installed:\
+To run the code and fully replicate the experiments, you will need to make sure that you have valid licenses of <code>Gurobi</code> and <code>BARON</code>, and the following dependencies installed:\
 <code>Python 3.7.3</code> <code>scikit-learn</code> <code>numpy</code> <code>scipy</code> <code>pandas</code> <code>random</code> <code>gurobipy</code> <code>pyomo</code>
 
 [main_synthetic_data.py](src/main_synthetic_data.py) corresponds to the experiment described in Section 4.1 - 4.6, while [main_real_data.py](src/main_real_data.py) corresponds to Section 4.7 in the paper. The remaining files contain code used to define functions, build models, and specify trust-region constraints. Among them, we want to highlight that: 
 * [predictive_modeling.py](src/predictive_modeling.py) contains code that receives information from pre-trained predictive models, which will be fed into the OPPM models.
-* [optimization_models.py](src/optimization_models.py) includes the OPPM models of **BASE** (without trust-region constraints) and variants with the following configurations: **IF**, **MD**, **KNN**, which are our proposed trust-regions.
-* [optimization_benchmark_models.py](src/optimization_benchmark_models.py) includes the OPPM models with the following configurations: **SVM**, **SVM-BC**, **CH**, **PCA**, which are trust-regions existing in literature.
+* [optimization_models.py](src/optimization_models.py) includes the OPPM models of **BASE** (without trust-region constraints) and variants with the following configurations: **IF**, **MD**, **KNN**, which are trust-regions proposed in this paper.
+* [optimization_benchmark_models.py](src/optimization_benchmark_models.py) includes the OPPM models with the following configurations: **SVM-BC**, **CH**, **PCA**, which are trust-regions existing in literature.
+* [optimization_svm_model_baron.py](src/optimization_svm_model_baron.py) includes the OPPM model with the **SVM** configuration, which is a trust-regions existing in literature and needs to be solved with <code>BARON</code>.
 
 
