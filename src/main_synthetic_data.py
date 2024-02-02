@@ -20,8 +20,8 @@ import time
 import random
 
 from pyDOE import *
-from skopt.space import Space
-from skopt.sampler import Lhs
+
+
 
 import numpy as np
 from gurobipy import GRB
@@ -30,6 +30,8 @@ import itertools
 
 from sklearn.svm import OneClassSVM
 from sklearn.decomposition import PCA
+from skopt.space import Space
+from skopt.sampler import Lhs
 
 from global_benchmark_functions import *
 from synthetic_data_generation import *
@@ -75,7 +77,7 @@ n_samples = 1000
 lambdas_std_noise =  [1] # related to the noise included in the outcome of each sampled point 
     
 # Predictive Model Procedures (Section 4.3)
-list_predictive_model = ['LR', 'NN', 'RF']
+list_predictive_model = ['LR', 'NN', 'RF'] 
 
 # Optimization Methods and Experimental Parameters (Section 4.4)
 ## KNN
@@ -174,7 +176,7 @@ for true_function in list_true_function:
                     TestRsquare = lr_info['test_r_sq']
                     print('================  unrestricted result  ================')
                     OptimalObjective_unrestricted, CorrExpectation_unrestricted, Runtime_unrestricted = lr_unrestricted(lr_info, true_function, X_train, min_max_scaler, GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
-                    OptimalObjective_unrestricted = standard_scaler_y.inverse_transform([OptimalObjective_unrestricted])[0]
+                    OptimalObjective_unrestricted = standard_scaler_y.inverse_transform([[OptimalObjective_unrestricted]])[0][0]
                     MIPGap_unrestricted = 0
                     print("OptimalObjective_unrestricted: " + str(OptimalObjective_unrestricted))
                     print("CorrExpectation_unrestricted: " + str(CorrExpectation_unrestricted))
@@ -192,12 +194,13 @@ for true_function in list_true_function:
                             print("volume_IF: " + str(volume_of_IF))
                             OptimalObjective_if, CorrExpectation_if, Runtime_if, MIPGap_if = lr_isolation_forest(lr_info, isolation_forest_info, true_function, X_train, min_max_scaler, Ls_if[i], objective = GRB.MINIMIZE, bigM_if=10000.0, OutputFlag = 0, timelimit = time_limit)
                             if OptimalObjective_if != 'null':
-                                OptimalObjective_if = standard_scaler_y.inverse_transform([OptimalObjective_if])[0]
+                                OptimalObjective_if = standard_scaler_y.inverse_transform([[OptimalObjective_if]])[0][0]
                             print("OptimalObjective_if: " + str(OptimalObjective_if))
                             print("CorrExpectation_if: " + str(CorrExpectation_if))
                             print("Runtime_if: " + str(Runtime_if))
                             list_info_save = [true_function.__name__, random_state,'LR', 'IF', i+1, Ls_if[i], volume_of_IF, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted,OptimalObjective_if, CorrExpectation_if, Runtime_if, MIPGap_if]
                             ExpResult.append(list_info_save) 
+                            
  
                         
                     print('================  result with svm -- Baron -- different rho ================')                    
@@ -211,7 +214,7 @@ for true_function in list_true_function:
                         print("volume_SVM: " + str(volume_of_SVM))
                         OptimalObjective_svm, CorrExpectation_svm, Runtime_svm = lr_svm_baron_rho_new(svm, lr_info, rho_new, true_function, X_train, min_max_scaler, timelimit = time_limit, objective = minimize)
                         if OptimalObjective_svm != 'null':
-                            OptimalObjective_svm = standard_scaler_y.inverse_transform([OptimalObjective_svm])[0]
+                            OptimalObjective_svm = standard_scaler_y.inverse_transform([[OptimalObjective_svm]])[0][0]
                             MIPGap_svm = Baron_MIPGap()
                         else:
                             MIPGap_svm = 'null'
@@ -226,7 +229,7 @@ for true_function in list_true_function:
                         print('================  result with svm -- Gurobi  ================')
                         OptimalObjective_svm_cb, CorrExpectation_svm_cb, Runtime_svm_cb, MIPGap_svm_cb = lr_svm_w_callback(svm, rho_new, lr_info, true_function, X_train, min_max_scaler, x_segment_count, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
                         if OptimalObjective_svm_cb != 'null':
-                            OptimalObjective_svm_cb = standard_scaler_y.inverse_transform([OptimalObjective_svm_cb])[0]
+                            OptimalObjective_svm_cb = standard_scaler_y.inverse_transform([[OptimalObjective_svm_cb]])[0][0]
                         # MIPGap_svm_cb = 0
                         print("OptimalObjective_svm_cb: " + str(OptimalObjective_svm_cb))
                         print("CorrExpectation_svm_cb: " + str(CorrExpectation_svm_cb))
@@ -234,6 +237,7 @@ for true_function in list_true_function:
                         print("MIPGap_svm_cb: " + str(MIPGap_svm_cb)) 
                         list_info_save = [true_function.__name__, random_state,'LR', 'SVM-BC', i+1, rho_new, volume_of_SVM, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_svm_cb, CorrExpectation_svm_cb, Runtime_svm_cb, MIPGap_svm_cb]
                         ExpResult.append(list_info_save)
+                        
                     
                     print('================  result with convex hull  ================')
                     start_time_tmp = datetime.datetime.now()
@@ -241,8 +245,9 @@ for true_function in list_true_function:
                     volume_of_CH = volume_CH(X, X_train)
                     print("volume: " + str(volume_of_CH))
                     OptimalObjective_ch, CorrExpectation_ch, Runtime_ch = lr_convex_hull(lr_info, true_function, X_train, min_max_scaler, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
-                    OptimalObjective_ch = standard_scaler_y.inverse_transform([OptimalObjective_ch])[0]
+                    OptimalObjective_ch = standard_scaler_y.inverse_transform([[OptimalObjective_ch]])[0][0]
                     MIPGap_ch = 0
+                    print("OptimalObjective_ch: " + str(OptimalObjective_ch))
                     print("CorrExpectation_ch: " + str(CorrExpectation_ch))
                     print("Runtime_ch: " + str(Runtime_ch))
                     list_info_save = [true_function.__name__, random_state, 'LR', 'CH', 1, 'CH', volume_of_CH, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted,  OptimalObjective_ch, CorrExpectation_ch, Runtime_ch, MIPGap_ch]
@@ -258,10 +263,11 @@ for true_function in list_true_function:
                         volume_of_PCA = volume_PCA(X, X_train, rho_new)
                         print("volume: " + str(volume_of_PCA))
                         OptimalObjective_pca, CorrExpectation_pca, Runtime_pca = lr_pca_constr(lr_info, true_function, X_train, min_max_scaler, rho_new, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
-                        OptimalObjective_pca = standard_scaler_y.inverse_transform([OptimalObjective_pca])[0]
+                        OptimalObjective_pca = standard_scaler_y.inverse_transform([[OptimalObjective_pca]])[0][0]
                         print("CorrExpectation_pca: " + str(CorrExpectation_pca))
                         list_info_save = [true_function.__name__, random_state, 'LR', 'PCA', i+1, rho_new, volume_of_PCA, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_pca, CorrExpectation_pca, Runtime_pca, 0]
                         ExpResult.append(list_info_save)
+                         
 
                     print('================  result with m dist  ================') 
                     alpha_segment = (alph_md_ub - alph_md_lb) / 6
@@ -273,10 +279,11 @@ for true_function in list_true_function:
                         volume_of_MD = volume_MD(X, X_train, rho_new)
                         print("volume: " + str(volume_of_MD))
                         OptimalObjective_mdist, CorrExpectation_mdist, Runtime_mdist = lr_mdist(lr_info, true_function, X_train, min_max_scaler, rho_new, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
-                        OptimalObjective_mdist = standard_scaler_y.inverse_transform([OptimalObjective_mdist])[0]
+                        OptimalObjective_mdist = standard_scaler_y.inverse_transform([[OptimalObjective_mdist]])[0][0]
                         print("CorrExpectation_mdist: " + str(CorrExpectation_mdist))
                         list_info_save = [true_function.__name__, random_state, 'LR', 'MD', i+1, rho_new, volume_of_MD, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_mdist, CorrExpectation_mdist, Runtime_mdist, 0]
                         ExpResult.append(list_info_save)
+
 
                     print('================  result with KNN  ================')
                     X_good = TrainingDataForKNN(X_train, y_train, n_samples, pct_good_samples, lr_info['model'])
@@ -290,10 +297,11 @@ for true_function in list_true_function:
                         print("volume: " + str(volume_of_KNN))
                         D = rho_new * n_dimensions
                         OptimalObjective_kNN, CorrExpectation_kNN, Runtime_kNN, MIPGap_kNN = lr_knn(lr_info, true_function, X_good, min_max_scaler, k_neighbors, D, objective = GRB.MINIMIZE, bigM_kNN=10000.0, OutputFlag = 0, timelimit = time_limit)
-                        OptimalObjective_kNN = standard_scaler_y.inverse_transform([OptimalObjective_kNN])[0]
+                        OptimalObjective_kNN = standard_scaler_y.inverse_transform([[OptimalObjective_kNN]])[0][0]
                         print("CorrExpectation_kNN: " + str(CorrExpectation_kNN))
                         list_info_save = [true_function.__name__, random_state, 'LR', 'KNN', i+1, rho_new, volume_of_KNN, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_kNN, CorrExpectation_kNN, Runtime_kNN, MIPGap_kNN]
                         ExpResult.append(list_info_save)
+
                               
                 
 ## NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN ##
@@ -308,7 +316,7 @@ for true_function in list_true_function:
                     print('================  unrestricted result  ================')
                     OptimalObjective_unrestricted, CorrExpectation_unrestricted, Runtime_unrestricted, MIPGap_unrestricted = nn_unrestricted(true_function, min_max_scaler, X_train, nn_info, LB, UB, bigM = 10000.0, OutputFlag = 0, timelimit = time_limit)
                     if OptimalObjective_unrestricted != 'null':
-                        OptimalObjective_unrestricted = standard_scaler_y.inverse_transform([OptimalObjective_unrestricted])[0]
+                        OptimalObjective_unrestricted = standard_scaler_y.inverse_transform([[OptimalObjective_unrestricted]])[0][0]
                     print("OptimalObjective_unrestricted: " + str(OptimalObjective_unrestricted))
                     print("CorrExpectation_unrestricted: " + str(CorrExpectation_unrestricted))
                     print("Runtime_unrestricted: " + str(Runtime_unrestricted))
@@ -319,19 +327,21 @@ for true_function in list_true_function:
                     for i in range(len(Ls_if)):
                         if i == 0:
                             list_info_save = [true_function.__name__, random_state, 'NN', 'IF', i+1, Ls_if[i], 1, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted,  OptimalObjective_unrestricted, CorrExpectation_unrestricted, Runtime_unrestricted, MIPGap_unrestricted]
-                            ExpResult.append(list_info_save)                            
+                            ExpResult.append(list_info_save)  
+
                         else:
                             print("rho_new: " + str(Ls_if[i]))
                             volume_of_IF = volume_IF(X, clf, Ls_if[i])
                             print("volume_IF: " + str(volume_of_IF))
                             OptimalObjective_if, CorrExpectation_if, Runtime_if, MIPGap_if = nn_isolation_forest(nn_info, isolation_forest_info, true_function, X_train, LB, UB, min_max_scaler, Ls_if[i], objective = GRB.MINIMIZE, bigM_if=10000.0, bigM = 10000.0, OutputFlag = 0, timelimit = time_limit)      
                             if OptimalObjective_if != 'null':
-                                OptimalObjective_if = standard_scaler_y.inverse_transform([OptimalObjective_if])[0]
+                                OptimalObjective_if = standard_scaler_y.inverse_transform([[OptimalObjective_if]])[0][0]
                             print("OptimalObjective_if: " + str(OptimalObjective_if))
                             print("CorrExpectation_if: " + str(CorrExpectation_if))
                             print("Runtime_if: " + str(Runtime_if))
                             list_info_save = [true_function.__name__, random_state, 'NN', 'IF', i+1, Ls_if[i], volume_of_IF, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted,OptimalObjective_if, CorrExpectation_if, Runtime_if, MIPGap_if]
                             ExpResult.append(list_info_save) 
+
      
                     print('================  result with svm -- Baron -- different rho ================')
                     rho_segment = (rho_ub - rho_lb) / 6
@@ -344,7 +354,7 @@ for true_function in list_true_function:
                         print("volume_SVM: " + str(volume_of_SVM))
                         OptimalObjective_svm, CorrExpectation_svm, Runtime_svm = nn_svm_baron_rho_new(svm, nn_info, rho_new, true_function, X_train, LB, UB, min_max_scaler, objective = minimize, bigM = 10000.0, timelimit = time_limit)
                         if OptimalObjective_svm != 'null':
-                            OptimalObjective_svm = standard_scaler_y.inverse_transform([OptimalObjective_svm])[0]
+                            OptimalObjective_svm = standard_scaler_y.inverse_transform([[OptimalObjective_svm]])[0][0]
                             MIPGap_svm = Baron_MIPGap()
                         else:
                             MIPGap_svm = 'null'
@@ -359,21 +369,22 @@ for true_function in list_true_function:
                         print('================  result with svm -- Gurobi callback ================')    
                         OptimalObjective_svm_cb, CorrExpectation_svm_cb, Runtime_svm_cb, MIPGap_svm_cb = nn_svm_w_callback(svm, rho_new, nn_info, true_function, X_train, LB, UB, min_max_scaler, x_segment_count, objective = GRB.MINIMIZE, bigM = 10000.0, OutputFlag = 0, timelimit = time_limit)
                         if OptimalObjective_svm_cb != 'null':
-                            OptimalObjective_svm_cb = standard_scaler_y.inverse_transform([OptimalObjective_svm_cb])[0]
+                            OptimalObjective_svm_cb = standard_scaler_y.inverse_transform([[OptimalObjective_svm_cb]])[0][0]
                         print("OptimalObjective_svm_cb: " + str(OptimalObjective_svm_cb))
                         print("CorrExpectation_svm_cb: " + str(CorrExpectation_svm_cb))
                         print("Runtime_svm_cb: " + str(Runtime_svm_cb))
                         print("MIPGap_svm_cb: " + str(MIPGap_svm_cb))
                         list_info_save = [true_function.__name__, random_state, 'NN', 'SVM-BC', i+1, rho_new, volume_of_SVM, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_svm_cb, CorrExpectation_svm_cb, Runtime_svm_cb, MIPGap_svm_cb]
                         ExpResult.append(list_info_save) 
+
                     
                     print('================  result with convex hull  ================')
                     OptimalObjective_ch, CorrExpectation_ch, Runtime_ch, MIPGap_ch = nn_convex_hull(nn_info, true_function, X_train, LB, UB, min_max_scaler, objective = GRB.MINIMIZE, bigM = 10000.0, OutputFlag = 0, timelimit = time_limit)
-                    OptimalObjective_ch = standard_scaler_y.inverse_transform([OptimalObjective_ch])[0]
+                    OptimalObjective_ch = standard_scaler_y.inverse_transform([[OptimalObjective_ch]])[0][0]
                     print("CorrExpectation_ch: " + str(CorrExpectation_ch))
                     print("Runtime_ch: " + str(Runtime_ch))
                     list_info_save = [true_function.__name__, random_state, 'NN', 'CH', 1, 'CH', 'CH', TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted,  OptimalObjective_ch, CorrExpectation_ch, Runtime_ch, MIPGap_ch]
-                    ExpResult.append(list_info_save)    
+                    ExpResult.append(list_info_save) 
                    
                     print('================  result with pca -constraint  ================')  
                     alpha_segment = (alph_pca_ub - alph_pca_lb) / 6
@@ -385,10 +396,11 @@ for true_function in list_true_function:
                         volume_of_PCA = volume_PCA(X, X_train, rho_new)
                         print("volume: " + str(volume_of_PCA))
                         OptimalObjective_pca, CorrExpectation_pca, Runtime_pca, MIPGap_pca = nn_pca_constr(nn_info, true_function, X_train, LB, UB, min_max_scaler, rho_new, objective = GRB.MINIMIZE, bigM = 10000.0, OutputFlag = 0, timelimit = time_limit)
-                        OptimalObjective_pca = standard_scaler_y.inverse_transform([OptimalObjective_pca])[0]
+                        OptimalObjective_pca = standard_scaler_y.inverse_transform([[OptimalObjective_pca]])[0][0]
                         print("CorrExpectation_pca: " + str(CorrExpectation_pca))
                         list_info_save = [true_function.__name__, random_state, 'NN', 'PCA', i+1, rho_new, volume_of_PCA, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_pca, CorrExpectation_pca, Runtime_pca, 0]
                         ExpResult.append(list_info_save)
+
 
                     print('================  result with m dist  ================') 
                     alpha_segment = (alph_md_ub - alph_md_lb) / 6
@@ -400,10 +412,11 @@ for true_function in list_true_function:
                         volume_of_MD = volume_MD(X, X_train, rho_new)
                         print("volume: " + str(volume_of_MD))
                         OptimalObjective_mdist, CorrExpectation_mdist, Runtime_mdist, MIPGap_mdist = nn_mdist(true_function, min_max_scaler, X_train, nn_info, LB, UB, rho_new, OutputFlag = 0, bigM = 10000.0, timelimit = time_limit)
-                        OptimalObjective_mdist = standard_scaler_y.inverse_transform([OptimalObjective_mdist])[0]
+                        OptimalObjective_mdist = standard_scaler_y.inverse_transform([[OptimalObjective_mdist]])[0][0]
                         print("CorrExpectation_mdist: " + str(CorrExpectation_mdist))
                         list_info_save = [true_function.__name__, random_state, 'NN', 'MD', i+1, rho_new, volume_of_MD, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_mdist, CorrExpectation_mdist, Runtime_mdist, 0]
                         ExpResult.append(list_info_save)
+
 
                     print('================  result with KNN  ================')
                     X_good = TrainingDataForKNN(X_train, y_train, n_samples, pct_good_samples, nn)
@@ -417,10 +430,11 @@ for true_function in list_true_function:
                         print("volume: " + str(volume_of_KNN))
                         D = rho_new * n_dimensions
                         OptimalObjective_kNN, CorrExpectation_kNN, Runtime_kNN, MIPGap_kNN = nn_kNN(true_function, min_max_scaler, X_good, k_neighbors, D, nn_info, LB, UB, bigM_kNN = 10000, bigM = 10000, OutputFlag = 0, timelimit = time_limit)
-                        OptimalObjective_kNN = standard_scaler_y.inverse_transform([OptimalObjective_kNN])[0]
+                        OptimalObjective_kNN = standard_scaler_y.inverse_transform([[OptimalObjective_kNN]])[0][0]
                         print("CorrExpectation_kNN: " + str(CorrExpectation_kNN))
                         list_info_save = [true_function.__name__, random_state, 'NN', 'KNN', i+1, rho_new, volume_of_KNN, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_kNN, CorrExpectation_kNN, Runtime_kNN, MIPGap_kNN]
                         ExpResult.append(list_info_save)
+
     
 ## RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF ##
 ## RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF ##
@@ -434,12 +448,13 @@ for true_function in list_true_function:
                     TrainRsquare = rf_info['train_r_sq']  
                     TestRsquare = rf_info['test_r_sq']
                     print('================  unrestricted result  ================')       
-                    OptimalObjective_unrestricted, CorrExpectation_unrestricted, Runtime_unrestricted, MIPGap_unrestricted = rf_unrestricted(rf_info, true_function, X_train, min_max_scaler, GRB.MINIMIZE, OutputFlag = 1, timelimit = time_limit)
-                    OptimalObjective_unrestricted = standard_scaler_y.inverse_transform([OptimalObjective_unrestricted])[0]
+                    OptimalObjective_unrestricted, CorrExpectation_unrestricted, Runtime_unrestricted, MIPGap_unrestricted = rf_unrestricted(rf_info, true_function, X_train, min_max_scaler, GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
+                    OptimalObjective_unrestricted = standard_scaler_y.inverse_transform([[OptimalObjective_unrestricted]])[0][0]
                     print("CorrExpectation_unrestricted: " + str(CorrExpectation_unrestricted))
                     print("Runtime_unrestricted: " + str(Runtime_unrestricted))
                     list_info_save = [true_function.__name__, random_state, 'RF', 'Unrestricted', 1, 'Unrestricted', 'Unrestricted', TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_unrestricted, CorrExpectation_unrestricted, Runtime_unrestricted, MIPGap_unrestricted]
                     ExpResult.append(list_info_save) 
+
                         
                     print('================  result with isolation forest -- different depth  ================')                                    
                     for i in range(len(Ls_if)):
@@ -452,12 +467,13 @@ for true_function in list_true_function:
                             print("volume_IF: " + str(volume_of_IF))
                             OptimalObjective_if, CorrExpectation_if, Runtime_if, MIPGap_if = rf_isolation_forest(rf_info, isolation_forest_info, true_function, X_train, min_max_scaler, Ls_if[i], objective = GRB.MINIMIZE, bigM_if=10000.0, OutputFlag = 0, timelimit = time_limit)
                             if OptimalObjective_if != 'null':
-                                OptimalObjective_if = standard_scaler_y.inverse_transform([OptimalObjective_if])[0]
+                                OptimalObjective_if = standard_scaler_y.inverse_transform([[OptimalObjective_if]])[0][0]
                             print("OptimalObjective_if: " + str(OptimalObjective_if))
                             print("CorrExpectation_if: " + str(CorrExpectation_if))
                             print("Runtime_if: " + str(Runtime_if))
                             list_info_save = [true_function.__name__, random_state, 'RF', 'IF', i+1, Ls_if[i], volume_of_IF, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted,OptimalObjective_if, CorrExpectation_if, Runtime_if, MIPGap_if]
                             ExpResult.append(list_info_save) 
+
   
                     print('================  result with svm -- Baron -- different rho ================')
                     rho_segment = (rho_ub - rho_lb) / 6
@@ -470,7 +486,7 @@ for true_function in list_true_function:
                         print("volume_SVM: " + str(volume_of_SVM))
                         OptimalObjective_svm, CorrExpectation_svm, Runtime_svm = rf_svm_baron_rho_new(svm, rf_info, rho_new, true_function, X_train, min_max_scaler, objective = minimize, timelimit = time_limit)
                         if OptimalObjective_svm != 'null':
-                            OptimalObjective_svm = standard_scaler_y.inverse_transform([OptimalObjective_svm])[0]
+                            OptimalObjective_svm = standard_scaler_y.inverse_transform([[OptimalObjective_svm]])[0][0]
                             MIPGap_svm = Baron_MIPGap()
                         else:
                             MIPGap_svm = 'null'
@@ -485,21 +501,23 @@ for true_function in list_true_function:
                         print('================  result with svm -- Gurobi callback ================')    
                         OptimalObjective_svm_cb, CorrExpectation_svm_cb, Runtime_svm_cb, MIPGap_svm_cb = rf_svm_w_callback(svm, rho_new, rf_info, true_function, X_train, min_max_scaler, x_segment_count, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
                         if OptimalObjective_svm_cb != 'null':
-                            OptimalObjective_svm_cb = standard_scaler_y.inverse_transform([OptimalObjective_svm_cb])[0]
+                            OptimalObjective_svm_cb = standard_scaler_y.inverse_transform([[OptimalObjective_svm_cb]])[0][0]
                         print("OptimalObjective_svm_cb: " + str(OptimalObjective_svm_cb))
                         print("CorrExpectation_svm_cb: " + str(CorrExpectation_svm_cb))
                         print("Runtime_svm_cb: " + str(Runtime_svm_cb))
                         print("MIPGap_svm_cb: " + str(MIPGap_svm_cb))
                         list_info_save = [true_function.__name__, random_state, 'RF', 'SVM-BC', i+1, rho_new, volume_of_SVM, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_svm_cb, CorrExpectation_svm_cb, Runtime_svm_cb, MIPGap_svm_cb]
                         ExpResult.append(list_info_save) 
+
                         
                     print('================  result with convex hull  ================')
                     OptimalObjective_ch, CorrExpectation_ch, Runtime_ch, MIPGap_ch = rf_convex_hull(rf_info, true_function, X_train, min_max_scaler, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
-                    OptimalObjective_ch = standard_scaler_y.inverse_transform([OptimalObjective_ch])[0]
+                    OptimalObjective_ch = standard_scaler_y.inverse_transform([[OptimalObjective_ch]])[0][0]
                     print("CorrExpectation_convex_hull: " + str(CorrExpectation_ch))
                     print("Runtime_convex_hull: " + str(Runtime_ch))
                     list_info_save = [true_function.__name__, random_state, 'RF', 'CH', 1, 'CH', 'CH', TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted,  OptimalObjective_ch, CorrExpectation_ch, Runtime_ch, MIPGap_ch]
-                    ExpResult.append(list_info_save)  
+                    ExpResult.append(list_info_save) 
+
             
                     print('================  result with pca -constraint  ================')  
                     alpha_segment = (alph_pca_ub - alph_pca_lb) / 6
@@ -511,10 +529,11 @@ for true_function in list_true_function:
                         volume_of_PCA = volume_PCA(X, X_train, rho_new)
                         print("volume: " + str(volume_of_PCA))
                         OptimalObjective_pca, CorrExpectation_pca, Runtime_pca, MIPGap_pca = rf_pca_constr(rf_info, true_function, X_train, min_max_scaler, rho_new, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
-                        OptimalObjective_pca = standard_scaler_y.inverse_transform([OptimalObjective_pca])[0]
+                        OptimalObjective_pca = standard_scaler_y.inverse_transform([[OptimalObjective_pca]])[0][0]
                         print("CorrExpectation_pca: " + str(CorrExpectation_pca))
                         list_info_save = [true_function.__name__, random_state, 'RF', 'PCA', i+1, rho_new, volume_of_PCA, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_pca, CorrExpectation_pca, Runtime_pca, 0]
                         ExpResult.append(list_info_save)
+
             
                     print('================  result with m dist  ================') 
                     alpha_segment = (alph_md_ub - alph_md_lb) / 6
@@ -527,7 +546,7 @@ for true_function in list_true_function:
                         print("volume: " + str(volume_of_MD))
                         OptimalObjective_mdist, CorrExpectation_mdist, Runtime_mdist, MIPGap_mdist = rf_mdist(rf_info, true_function, X_train, min_max_scaler, rho_new, objective = GRB.MINIMIZE, OutputFlag = 0, timelimit = time_limit)
                         if OptimalObjective_mdist != 'null':
-                            OptimalObjective_mdist = standard_scaler_y.inverse_transform([OptimalObjective_mdist])[0]
+                            OptimalObjective_mdist = standard_scaler_y.inverse_transform([[OptimalObjective_mdist]])[0][0]
                         print("CorrExpectation_mdist: " + str(CorrExpectation_mdist))
                         list_info_save = [true_function.__name__, random_state, 'RF', 'MD', i+1, rho_new, volume_of_MD, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_mdist, CorrExpectation_mdist, Runtime_mdist, 0]
                         ExpResult.append(list_info_save)
@@ -544,7 +563,7 @@ for true_function in list_true_function:
                         print("volume: " + str(volume_of_KNN))
                         D = rho_new * n_dimensions
                         OptimalObjective_kNN, CorrExpectation_kNN, Runtime_kNN, MIPGap_kNN = rf_kNN(true_function, min_max_scaler, X_good, k_neighbors, D, rf_info, objective = GRB.MINIMIZE, bigM_kNN=10000.0, OutputFlag = 0, timelimit = time_limit)
-                        OptimalObjective_kNN = standard_scaler_y.inverse_transform([OptimalObjective_kNN])[0]
+                        OptimalObjective_kNN = standard_scaler_y.inverse_transform([[OptimalObjective_kNN]])[0][0]
                         print("CorrExpectation_kNN: " + str(CorrExpectation_kNN))
                         list_info_save = [true_function.__name__, random_state, 'RF', 'KNN', i+1, rho_new, volume_of_KNN, TrainRsquare, TestRsquare, BestSampleWithNoise, CorrExpectation_BestSample, OptimalObjective_unrestricted, CorrExpectation_unrestricted, OptimalObjective_kNN, CorrExpectation_kNN, Runtime_kNN, MIPGap_kNN]
                         ExpResult.append(list_info_save)
@@ -564,3 +583,10 @@ elapsed_time = stop_time - start_time
 print('Elapsed Time: ', elapsed_time) 
 
 
+
+     
+print('========== Finish ===========')
+stop_time = datetime.datetime.now()
+print ("Completed time : ", stop_time)
+elapsed_time = stop_time - start_time
+print('Elapsed Time: ', elapsed_time) 

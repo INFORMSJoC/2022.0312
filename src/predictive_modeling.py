@@ -17,8 +17,6 @@ import random
 import itertools
 
 from pyDOE import *
-from skopt.space import Space
-from skopt.sampler import Lhs
 
 import sklearn.datasets
 from sklearn.ensemble import RandomForestRegressor

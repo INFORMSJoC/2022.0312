@@ -20,8 +20,6 @@ from sklearn.model_selection import train_test_split
 from scipy.stats import shapiro
 
 from pyDOE import *
-from skopt.space import Space
-from skopt.sampler import Lhs
 
 import numpy as np
 from gurobipy import GRB
@@ -40,6 +38,8 @@ import itertools
 from pca_distance_calculator import *
 from sklearn.svm import OneClassSVM
 from sklearn.decomposition import PCA
+from skopt.space import Space
+from skopt.sampler import Lhs
 
 #%%
 '''
@@ -64,7 +64,7 @@ X_test = X_test.to_numpy()
 Setting of Paremeters in Experiments (Section 4.7)
 '''
 # Predictive Model Procedures (Section 4.3)
-list_predictive_model = ['LR', 'NN', 'RF'] 
+list_predictive_model = [ 'LR', 'NN', 'RF']
 
 # Optimization Methods and Experimental Parameters (Section 4.4)
 # IF
@@ -84,10 +84,9 @@ UB = np.ones(n_dimensions)
 
 time_limit = 1800
 
-#%%
-SOL = []
 
 #%%
+SOL = []
 start_time = datetime.datetime.now()
 print('Start Time', start_time)
 
@@ -114,18 +113,20 @@ for predictive_model in list_predictive_model:
             rho_new = sp.stats.chi2.ppf(1-alpha_breakpoints[i], df = n_dimensions)
             rho_new = trunc(rho_new, 4)
             print("rho_new: " + str(rho_new))       
-            OptimalObjective_md, Sol_md, Runtime_md = lr_mdist_real_data(lr_info, X_train, min_max_scaler, rho_new, objective = GRB.MAXIMIZE, OutputFlag = 1, timelimit = time_limit)
-            if Sol_md != 'null':
+            OptimalObjective_md, Sol_md, Runtime_md = lr_mdist_real_data(lr_info, X_train, min_max_scaler, rho_new, objective = GRB.MAXIMIZE, OutputFlag = 0, timelimit = time_limit)
+            if type(Sol_md) != str:
                 SOL.append(['LR'] + [TrainRsquare] + [TestRsquare] + ['MD'] + [i+1] + [rho_new] + Sol_md)
             else:
                 SOL.append(['LR'] + [TrainRsquare] + [TestRsquare] + ['MD'] + [i+1] + [rho_new] + [Sol_md]*11)              
-        
+            
         print('================  result with isolation forest -- different depth  ================')                     
         for i in range(len(Ls_if)):
             print("rho_new: " + str(Ls_if[i]))
             L = Ls_if[i]
             OptimalObjective_if, Sol_if, Runtime_if, MIPGap_if = lr_isolation_forest_real_data(lr_info, isolation_forest_info, X_train, min_max_scaler, L, objective = GRB.MAXIMIZE, bigM_if=10000.0, OutputFlag = 0, timelimit = time_limit)
             SOL.append(['LR'] + [TrainRsquare] + [TestRsquare] + ['IF'] + [i+1] + [L] + Sol_if)
+
+            
 
         
 ## NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN #### NN ##
@@ -141,7 +142,7 @@ for predictive_model in list_predictive_model:
         print('Testing R square: ', TestRsquare)
     
         print('================  unrestricted result  ================')
-        OptimalObjective_unrestricted, Sol_unrestricted, Runtime_unrestricted, MIPGap_unrestricted = nn_unrestricted_real_data(nn_info, LB, UB, obj = GRB.MAXIMIZE, bigM = 100000.0, OutputFlag = 1, timelimit = time_limit)
+        OptimalObjective_unrestricted, Sol_unrestricted, Runtime_unrestricted, MIPGap_unrestricted = nn_unrestricted_real_data(nn_info, LB, UB, obj = GRB.MAXIMIZE, bigM = 100000.0, OutputFlag = 0, timelimit = time_limit)
         SOL.append(['NN'] + [TrainRsquare] + [TestRsquare] + ['Unrestricted'] + ['Unrestricted'] + ['Unrestricted'] + Sol_unrestricted.tolist())
 
         print('================  result with m dist  ================') 
@@ -151,19 +152,20 @@ for predictive_model in list_predictive_model:
             rho_new = sp.stats.chi2.ppf(1-alpha_breakpoints[i], df = n_dimensions)
             rho_new = trunc(rho_new, 4)
             print("rho_new: " + str(rho_new))       
-            OptimalObjective_md, Sol_md, Runtime_md, MIPGap_md = nn_mdist_real_data(min_max_scaler, X_train, nn_info, LB, UB, rho_new, obj = GRB.MAXIMIZE, bigM = 10000.0, OutputFlag = 1, timelimit = time_limit)
-            if Sol_md != 'null':
+            OptimalObjective_md, Sol_md, Runtime_md, MIPGap_md = nn_mdist_real_data(min_max_scaler, X_train, nn_info, LB, UB, rho_new, obj = GRB.MAXIMIZE, bigM = 10000.0, OutputFlag = 0, timelimit = time_limit)
+            if type(Sol_md) != str:
                 SOL.append(['NN'] + [TrainRsquare] + [TestRsquare] + ['MD'] + [i+1] + [rho_new] + Sol_md.tolist())
             else:
-                SOL.append(['NN'] + [TrainRsquare] + [TestRsquare] + ['MD'] + [i+1] + [rho_new] + [Sol_md]*11)              
+                SOL.append(['NN'] + [TrainRsquare] + [TestRsquare] + ['MD'] + [i+1] + [rho_new] + [Sol_md]*11)    
+
 
         print('================  result with isolation forest -- different depth  ================')              
         for i in range(len(Ls_if)):
             print("rho_new: " + str(Ls_if[i]))
             L = Ls_if[i]        
-            OptimalObjective_if, Sol_if, Runtime_if, MIPGap_if = nn_isolation_forest_real_data(nn_info, isolation_forest_info, X_train, LB, UB, min_max_scaler, L, objective = GRB.MAXIMIZE, bigM_if=10000.0, bigM = 10000.0, OutputFlag = 1, timelimit = time_limit)
+            OptimalObjective_if, Sol_if, Runtime_if, MIPGap_if = nn_isolation_forest_real_data(nn_info, isolation_forest_info, X_train, LB, UB, min_max_scaler, L, objective = GRB.MAXIMIZE, bigM_if=10000.0, bigM = 10000.0, OutputFlag = 0, timelimit = time_limit)
             SOL.append(['NN'] + [TrainRsquare] + [TestRsquare] + ['IF'] + [i+1] + [L] + Sol_if.tolist())
-    
+
 
 
 ## RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF #### RF ##
@@ -182,6 +184,7 @@ for predictive_model in list_predictive_model:
         OptimalObjective_unrestricted, Sol_unrestricted, Runtime_unrestricted, MIPGap_unrestricted = rf_unrestricted_real_data(rf_info, objective = GRB.MAXIMIZE, OutputFlag = 0, timelimit = time_limit)
         SOL.append(['RF'] + [TrainRsquare] + [TestRsquare] + ['Unrestricted'] + ['Unrestricted'] + ['Unrestricted'] + Sol_unrestricted)
 
+
         print('================  result with m dist  ================') 
         alpha_segment = (alph_md_ub - alph_md_lb) / 6
         alpha_breakpoints = [alph_md_lb + alpha_segment * i for i in range(7)]
@@ -190,18 +193,19 @@ for predictive_model in list_predictive_model:
             rho_new = trunc(rho_new, 4)
             print("rho_new: " + str(rho_new))       
             OptimalObjective_md, Sol_md, Runtime_md, MIPGap_md = rf_mdist_real_data(rf_info, X_train, min_max_scaler, rho_new, objective = GRB.MAXIMIZE, OutputFlag = 0, timelimit = time_limit)
-            if Sol_md != 'null':
+            if type(Sol_md) != str:
                 SOL.append(['RF'] + [TrainRsquare] + [TestRsquare] + ['MD'] + [i+1] + [rho_new] + Sol_md)
             else:
                 SOL.append(['RF'] + [TrainRsquare] + [TestRsquare] + ['MD'] + [i+1] + [rho_new] + [Sol_md]*11)
-        
+
+
         print('================  result with isolation forest -- different depth  ================')                     
         for i in range(len(Ls_if)):
             print("rho_new: " + str(Ls_if[i]))
             L = Ls_if[i] 
-            OptimalObjective_if, Sol_if, Runtime_if, MIPGap_if = rf_isolation_forest_real_data(rf_info, isolation_forest_info, X_train, min_max_scaler, L, objective = GRB.MAXIMIZE, bigM_if=10000.0, OutputFlag = 1, timelimit = time_limit)
+            OptimalObjective_if, Sol_if, Runtime_if, MIPGap_if = rf_isolation_forest_real_data(rf_info, isolation_forest_info, X_train, min_max_scaler, L, objective = GRB.MAXIMIZE, bigM_if=10000.0, OutputFlag = 0, timelimit = time_limit)
             SOL.append(['RF'] + [TrainRsquare] + [TestRsquare] + ['IF'] + [i+1] + [L] + Sol_if)
-
+ 
         
 column_names = ["predictive model", "TrainRsquare", "TestRsquare", "Method", "Tight_Level", "Tight_Value"] + X_scaled.columns.tolist()
 df = pd.DataFrame(SOL, columns = column_names)  
