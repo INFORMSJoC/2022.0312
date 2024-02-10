@@ -35,7 +35,7 @@ For experiment results on synthetic data, each record in the "AllInstanceResults
 
 The results include predicted outcome $F(x^\ast_C)$ in Column N, true outcome $f(x^\ast_C)$ in Column O, where $x^\ast_C$ is the solution found by the OPPM model configuration selected, running time in Column R, the percent improvement over **$BASE$** in column Q, and the gap in Column S.
 
-For results on wine data, each figure in [results](results/) folder represents a predictive model fitted to the wine data and displays training input data, and solutions obtained from the **$BASE$** model and two model configurations with **$IF$** and **$MD$** constraints (set at tightness level 6).
+For results on wine data, each figure in "results" folder represents a predictive model fitted to the wine data and displays training input data, and solutions obtained from the **$BASE$** model and two model configurations with **$IF$** and **$MD$** constraints (set at tightness level 6).
 
 ## Replicating
 The folder of [src](src/) contains all the code that generates synthetic data, and implements the optimization models based on three predictive models (linear regression, random forest, and neural network) and different types of trust-region constraints.  
