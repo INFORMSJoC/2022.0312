@@ -31,7 +31,7 @@ For each function, we generate 10 different datasets consisting of 1000 points, 
 ## Results 
 The folder of [results](results/) contains the solutions ("results/solutions_wine.csv") and colored figures from the real world application and the experiment results using the synthetic data ("results/results_experiment.xlsx"). 
 
-For experiment results on synthetic data, each record in the "AllInstanceResults" spreadsheet of [results_experiment.xlsx](results/results_experiment.xlsx) records the optimization results obtained from solving a problem instance, which is defined by a predictive model (Column C) fitted to a dataset, with a model configuration (Column D) at a specific tightness level (Column E). 
+For experiment results on synthetic data, each record in the "AllInstanceResults" spreadsheet of "results/results_experiment.xlsx" records the optimization results obtained from solving a problem instance, which is defined by a predictive model (Column C) fitted to a dataset, with a model configuration (Column D) at a specific tightness level (Column E). 
 
 The results include predicted outcome $F(x^\ast_C)$ in Column N, true outcome $f(x^\ast_C)$ in Column O, where $x^\ast_C$ is the solution found by the OPPM model configuration selected, running time in Column R, the percent improvement over **$BASE$** in column Q, and the gap in Column S.
 
