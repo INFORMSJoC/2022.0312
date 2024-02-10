@@ -17,7 +17,7 @@ Below is the BibTex for citing this snapshot of the repository.
   author =        {Shi, Chenbo and Emadikhiav, Mohsen and Lozano, Leonardo and Bergman, David},
   publisher =     {INFORMS Journal on Computing},
   title =         {Constraint Learning to Define Trust Regions in  Optimization Over Pre-Trained Predictive Models},
-  year =          {2023},
+  year =          {2024},
   doi =           {10.1287/ijoc.2022.0312.cd},
   note =          {Available for download at https://github.com/INFORMSJoC/2022.0312},
 }  
