@@ -38,7 +38,7 @@ The results include predicted outcome $F(x^\ast_C)$ in Column N, true outcome $f
 For results on wine data, each figure in "results" folder represents a predictive model fitted to the wine data and displays training input data, and solutions obtained from the **$BASE$** model and two model configurations with **$IF$** and **$MD$** constraints (set at tightness level 6).
 
 ## Replicating
-The folder of [src](src/) contains all the code that generates synthetic data, and implements the optimization models based on three predictive models (linear regression, random forest, and neural network) and different types of trust-region constraints.  
+The folder of [src](src/) contains all the code that generates synthetic data and implements the optimization models based on three predictive models (linear regression, random forest, and neural network) with different types of trust-region constraints.  
 
 To run the code and fully replicate the experiments, you will need to make sure that you have valid licenses of <code>Gurobi</code> and <code>BARON</code>, and the following dependencies installed:\
 <code>Python 3.7.3</code> <code>scikit-learn</code> <code>numpy</code> <code>scipy</code> <code>pandas</code> <code>random</code> <code>gurobipy</code> <code>pyomo</code>
